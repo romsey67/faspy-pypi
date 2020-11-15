@@ -11,7 +11,8 @@ from faspy.interestrate.rmp_dates import tenor_to_maturity as ttm
 from faspy.interestrate.rmp_curves import generate_st_df as gen_stdf
 from numpy import datetime64 as dt64, busdaycalendar as cal
 from numpy import busday_offset as bus_off
-from faspy.interestrate.rmp_curves import generate_fulldf as gen_fdf, interpolation
+from faspy.interestrate.rmp_curves import generate_fulldf as gen_fdf, \
+    interpolation
 from numba import njit
 from faspy.interestrate.conventions import *
 
@@ -585,6 +586,7 @@ class Rates:
                           holidays=self.holidays)
 
         self.df.data = list(all_df)
+        # print(list(all_df))
         #self.__par = all_df['par_rates']
 
 

@@ -1,10 +1,13 @@
 import numpy as np
+from numpy import datetime64 as dt64
 import faspy.interestrate.rmp_dates as npd
-from  faspy.interestrate.rmp_dates import tenor_to_maturity as ttm, day_count_factor as day_cf
+from  faspy.interestrate.rmp_dates import tenor_to_maturity as ttm, \
+day_count_factor as day_cf
 from faspy.interestrate.rmp_dates import generate_dates as gen_dates
 from scipy import interpolate
 import sympy as sy
 import numba
+import math
 import time
 from collections import deque
 
@@ -324,10 +327,79 @@ def solver_rate_from_compounded_df(dis_factor,daycount_factors):
     return new_rates
 
 
+def calc_fwd_df(start, end, time_axis=None, df_axis=None, ifunc=None):
+    
+    if ifunc is not None:
+        df1 = ifunc(start)
+        df2 = ifunc(end)
+        return df2 / df1
+    
+    elif (time_axis is not None and df_axis is not None):
+        interp = interpolation(time_axis, df_axis, start, is_function=True)
+        df1 = interp(start)
+        df2 = interp(end)
+        return df2 / df1
+    else:
+        return None
+
+
+def calc_shortrate_from_df(startdate, enddate, df, day_count,
+                           rate_basis="Money Market"):
+    sdate = dt64(startdate, "D")
+    edate = dt64(enddate, "D")
+    dcf = day_cf(day_count, sdate, edate, bondmat_date=edate,
+                 next_coupon_date=edate)
+    if rate_basis == "Discount Rate":
+        return _df2dr(df, dcf)
+    else:
+        return _df2mmr(float(df), float(dcf))
+    return None
+
+
+def calc_df_from_shortrate(startdate, enddate, rate, day_count,
+                           rate_basis="Money Market"):
+    sdate = dt64(startdate, "D")
+    edate = dt64(enddate, "D")
+    dcf = day_cf(day_count, sdate, edate, next_coupon_date=edate)
+    if rate_basis == "Discount Rate":
+        return _dr2df(rate, dcf)
+    else:
+        return _mmr2df(rate, dcf)
+    return None
+
+
+def continuous_rate(value_date, rate, tenor, day_count="Actual/365",
+                    rate_basis="Money Market"):
+    maturity = ttm(value_date, tenor, convention=day_count)
+    time = day_cf("Actual/365", value_date, maturity)
+    dcf = day_cf(day_count, value_date, maturity)
+    if rate_basis == "Money_Market":
+        df = _mmr2df(float(rate), float(dcf))
+    elif rate_basis == "Discount Rate":
+        df = _dr2df(float(rate), float(dcf))
+    
+    crate = -math.log(df)/time
+    return crate
+    
+    
+
+
+@numba.njit('float64(float64, float64)')
+def _df2mmr(df, dcf):
+    rate = ((1 / df) - 1) / (0.01 * dcf)
+    return rate
+
+
 @numba.njit('float64(float64, float64)')
 def _mmr2df(rate, dcf):
     df = 1 / (1 + rate * 0.01 * dcf)
     return df
+
+
+@numba.njit('float64(float64, float64)')
+def _df2dr(df, dcf):
+    rate = (1 - df) / (0.01 * df)
+    return rate
 
 
 @numba.njit('float64(float64, float64)')

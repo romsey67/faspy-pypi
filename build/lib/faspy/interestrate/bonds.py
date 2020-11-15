@@ -225,6 +225,7 @@ def solver_bond_duration(fv, cpns=[], cpn_dcfs=[], yld_dcfs=[],
     return {'duration': duration, 'convexity': convexity}
 
 
+
 def create_bond_dates(bond):
     """
     Create list of coupon dates.

@@ -11,25 +11,47 @@ from faspy.interestrate.fas_ircls import STRates, LTRates, Rates
 
 # %%
 
-def discount_factor_gen(rates):
-    # rates must contain is an array of dictionaries
-    # eg [{value_date:, st_busday:, st_ratebasis:, st_daycount:, lt_busday:,
-    # lt_frequency:, lt_daycount:, rates:, {}}]
-    # rates key in the dictionary is a dictionary of rates
-    # eg  {'1W': None, '2W': None, '3W': None, '1M': None, '2M': None,
-    # '3M': None, '4M': None, '5M': None, '6M': None, '9M': None,
-    # '12M': None}'1Y': None, '2Y': None, '3Y': None, '4Y': None, '5Y': None,
-    # '6Y': None, '7Y': None, '10Y': None, '15Y': None, '20Y': None,
-    # '30Y': None}
+def discount_factor_gen(rates, return_type="time"):
+    """
+    Generate the discount factors.
 
+            Parameters:
+
+                rates: a dictionary with the following keys - value_date,
+                st_busday, st_ratebasis, st_daycount, lt_busday,
+                lt_frequency, lt_daycount and rates. 'rates' key in
+                the dictionary is a dictionary of interest rate in
+                percentage having the following keys - 1W,  2W, 3W, 1M,
+                2M, 3M, 4M, 5M, 6M, 9M, 12M, 1Y, 2Y, 3Y, 4Y, 5Y, 6Y, 7Y,
+                10Y, 15Y, 20Y, 30Y.
+
+            Returns:
+
+                a dictionary with the following keys - date, dcf, time,
+                days, df, rate
+    """
     if isinstance(rates, dict):
-        return _discount_factor_generate(rates)
+        dfs = _discount_factor_generate(rates)
+        if return_type == "days":
+            df = [{"days": x["days"], "df": x["df"]} for x in dfs]
+            df.insert(0, {"days": 0.00, "df": 1.00})
+        else:
+            df = [{"times": x["time"], "df": x["df"]} for x in dfs]
+            df.insert(0, {"times": 0.00, "df": 1.00})
+        results = df
 
     elif isinstance(rates, list):
         results = []
         for rate in rates:
             if isinstance(rate, dict):
-                results.append(_discount_factor_generate(rate))
+                dfs = _discount_factor_generate(rate)
+                if return_type == "days":
+                    df = [{"days": x["days"], "df": x["df"]} for x in dfs]
+                    df.insert(0, {"days": 0.00, "df": 1.00})
+                else:
+                    df = [{"times": x["time"], "df": x["df"]} for x in dfs]
+                    df.insert(0, {"times": 0.00, "df": 1.00})
+                results.append(df)
 
     return results
 

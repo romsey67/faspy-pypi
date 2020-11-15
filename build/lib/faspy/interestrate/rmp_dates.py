@@ -202,9 +202,6 @@ def _dcf_a365(prev_date, current_date, business_day=None, Frequency=1):
                 return years + yearfrac
 
 
-
-
-
 def _dcf_a365f(prev_date, current_date):
 
     datediff = _datediff(prev_date, current_date)
