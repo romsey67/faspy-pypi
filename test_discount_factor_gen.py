@@ -6,7 +6,7 @@ Created on Fri Oct 30 13:36:21 2020
 @author: RMS671214
 """
 
-from interestrate import discount_curve as dcurve
+from faspy.interestrate import discount_curve as dcurve
 
 # %%
 rates = []
@@ -31,3 +31,7 @@ dfs = dcurve.discount_factor_gen(rates, return_type="time")
 print(dfs)
 
 # %%
+
+flat = dcurve.flat_curve("2020-10-30", "2020-12-30", 5.30, rate_basis="Money Market",
+                         day_count="Actual/365", bus_day="No Adjustment",
+                         tenors=None, return_type="time")

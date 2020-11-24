@@ -1,0 +1,287 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Risk &#8212; faspy_docs 0.0.45 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Fixed Income Instruments" href="fixincome.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="risk">
+<h1>Risk<a class="headerlink" href="#risk" title="Permalink to this headline">¶</a></h1>
+<p>The initial purpose of the module is to calculate value at risk. In order to do so, various matrices of statistics measure have to be calculated  powered by numpy. Relevant functions are in a submodule named <em>var_utils</em>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">faspy.risk.var_utils</span> <span class="k">as</span> <span class="nn">fvar</span>
+</pre></div>
+</div>
+<p>or:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">faspy.risk</span> <span class="kn">import</span> <span class="n">var_utils</span> <span class="k">as</span> <span class="n">fvar</span>
+</pre></div>
+</div>
+<p>The matrices calculated are:</p>
+<ul class="simple">
+<li><p>historical returns</p></li>
+<li><p>volatilities and correlation</p></li>
+<li><p>asset/cash flows weigthing</p></li>
+</ul>
+<div class="section" id="historical-returns">
+<h2>Historical Returns<a class="headerlink" href="#historical-returns" title="Permalink to this headline">¶</a></h2>
+<p><strong>Log Returns From Prices</strong></p>
+<p>Calculate the log returns of prices. For interest rate product, please use discount factors as prices.</p>
+<dl class="py function">
+<dt id="returns_from_prices">
+<code class="sig-name descname">returns_from_prices</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prices</span></em>, <em class="sig-param"><span class="n">period</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#returns_from_prices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the log returns of prices</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prices</strong> – <em>numpy.array()</em>.</p></li>
+<li><p><strong>period</strong> – <em>int</em>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><em>numpy.array()</em>. An array of log returns</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p><strong>Returns From Rates</strong></p>
+<p>Calculate the returns using rates. If this method is used, it is recommended that the continuous rate is used instead of the normally quoted rate.</p>
+<dl class="py function">
+<dt id="returns_from_rates">
+<code class="sig-name descname">returns_from_rates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prices</span></em>, <em class="sig-param"><span class="n">period</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#returns_from_rates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the rate difference between the comparison period</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prices</strong> – <em>numpy.array()</em>.</p></li>
+<li><p><strong>period</strong> – <em>int</em>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><em>numpy.array()</em>. An array of log returns</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="volatilies-and-correlations">
+<h2>Volatilies and Correlations<a class="headerlink" href="#volatilies-and-correlations" title="Permalink to this headline">¶</a></h2>
+<p><strong>Volatilities</strong></p>
+<p>Calculate volatilities (standard deviation) of returnS for the purpose of calculating value at risk.</p>
+<dl class="py function">
+<dt id="volatilities">
+<code class="sig-name descname">volatilities</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#volatilities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the volatilities of data. Variables are the columns (<em>n</em>)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> – <em>numpy.array()</em>. <em>m</em> x <em>n</em> array</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><em>numpy.array()</em>. 1 x <em>n</em> array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p><strong>Correlations</strong></p>
+<p>Calculates correlations of data. For the purpose of calculating value at risk the data are historical returns.</p>
+<dl class="py function">
+<dt id="correlation">
+<code class="sig-name descname">correlation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#correlation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the correlation of data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> – <em>numpy.array()</em>. <em>m</em> x <em>n</em> array</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><em>numpy.array()</em>. n x <em>n</em> array</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="weighting-and-mapping">
+<h2>Weighting and Mapping<a class="headerlink" href="#weighting-and-mapping" title="Permalink to this headline">¶</a></h2>
+<p>As part of the process to calculate value at risk, cash flows of interest rate products have to be mapped to proper vertices. Once they are properly mapped, they will be weighted by the confidence interval, foreign exchange rate (in case of the foreign currencies cash flows) and basis point sensitivity (for interest rate products)</p>
+<p><strong>Mapping Interest Rate Cash Flows</strong></p>
+<dl class="py function">
+<dt id="map_cf_to_var_vertices">
+<code class="sig-name descname">map_cf_to_var_vertices</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cashflows</span></em>, <em class="sig-param"><span class="n">disfac</span></em>, <em class="sig-param"><span class="n">var_vertices</span></em>, <em class="sig-param"><span class="n">corr</span></em>, <em class="sig-param"><span class="n">vola</span></em><span class="sig-paren">)</span><a class="headerlink" href="#map_cf_to_var_vertices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Map the cash flows provided vertices weighted by correlation, volatility and discount factor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cashflows</strong> – <em>list[{“times”:, “pv”:}]</em>.</p></li>
+<li><p><strong>disfac</strong> – <em>list[{“times”:, “pv”:}]</em>.</p></li>
+<li><p><strong>var_vertices</strong> – <em>list</em>. 1 x <em>n</em> array. The float value refers to time as fraction of a year or days.</p></li>
+<li><p><strong>corr</strong> – <em>list</em>. <em>n</em> x <em>n</em> array of correlation.</p></li>
+<li><p><strong>vola</strong> – <em>list</em>. <em>1</em> x <em>n</em> array of volatility.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><em>list</em>. 1 x <em>n</em> array of mapped cash flows.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p><strong>Weighting the Cash Flows</strong></p>
+<blockquote>
+<div><p>The weighting is required as part of the calculation of value at risk which use the following formula:</p>
+</div></blockquote>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+  V&amp;=\sqrt{WRW^T} \\
+  \text{where } V &amp;= \text{value at risk} \\
+  W &amp;= \text{ weighted cashflows/assets} \\
+    &amp;= \begin{bmatrix} w_1, w_2, ... w_n \end{bmatrix} \\
+    w_i &amp;= \text{ asset}_i \times z \times \sigma_{asset_i} \times fx \\
+    z &amp;= \text{ inverse cumulative distribution for the confidence interval }\\
+    fx &amp;= \text{ foreign exchange rate  as per unit of var currency} \\
+    \sigma_{asset_i} &amp;= \text{ volatility of} asset_i { returns} \\
+    R &amp;= \text{ correlation matrix} \\
+    W_T &amp;= \text{ transpose of matrix } W
+\end{align}\end{split}\]</div>
+<dl class="py function">
+<dt id="var_asset_weightbyprice">
+<code class="sig-name descname">var_asset_weightbyprice</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">assets</span></em>, <em class="sig-param"><span class="n">confidence</span></em>, <em class="sig-param"><span class="n">vol</span></em>, <em class="sig-param"><span class="n">fxrate</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#var_asset_weightbyprice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Weight the asset by confidence intervals, volatility and fx rate. Applicable for assets’ volatilities measured by the return of their prices .</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>assets</strong> – <em>ndarray</em>. 1 x n array of present values.</p></li>
+<li><p><strong>confidence</strong> – <em>ndarray</em>. 1 x n array of confidence intervals.</p></li>
+<li><p><strong>vol</strong> – <em>ndarray</em>. 1 x <em>n</em> array. 1 x n array of volatilities</p></li>
+<li><p><strong>fxrate</strong> – <em>float</em>. Foreign exchange rate  as per unit of var currency. Default value is 1</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><em>ndarray</em>. 1 x <em>n</em> array of weighted asset values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<dl class="py function">
+<dt id="var_asset_weightbyrate">
+<code class="sig-name descname">var_asset_weightbyrate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">assets</span></em>, <em class="sig-param"><span class="n">confidence</span></em>, <em class="sig-param"><span class="n">vol</span></em>, <em class="sig-param"><span class="n">bpvs</span></em>, <em class="sig-param"><span class="n">fxrate</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#var_asset_weightbyrate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Weight the asset by confidence intervals, volatility, present value of one basis point and fx rate. Applicable for assets’ volatilities measured by the interest rate differentials over the observe period.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>assets</strong> – <em>ndarray</em>. 1 x n array of present values.</p></li>
+<li><p><strong>confidence</strong> – <em>ndarray</em>. 1 x n array of confidence intervals.</p></li>
+<li><p><strong>vol</strong> – <em>ndarray</em>. 1 x <em>n</em> array. 1 x n array of volatilities</p></li>
+<li><p><strong>bpvs</strong> – <em>ndarray</em>. 1 x n array of present value of one basis point</p></li>
+<li><p><strong>fxrate</strong> – <em>float</em>. Foreign exchange rate  as per unit of var currency. Default value is 1</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><em>ndarray</em>. 1 x <em>n</em> array of weighted asset values</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">faspy_docs</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="interestrate.html">Interest Rate</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Risk</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#historical-returns">Historical Returns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#volatilies-and-correlations">Volatilies and Correlations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#weighting-and-mapping">Weighting and Mapping</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="fixincome.html" title="previous chapter">Fixed Income Instruments</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Rosli Mohd Sani.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/modules/risk.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

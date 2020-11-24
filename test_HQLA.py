@@ -6,7 +6,7 @@ Created on Thu Nov  5 14:42:51 2020
 @author: RMS671214
 """
 
-from faspy.liquidity import hqla
+from faspy.basel.liquidity import hqla
 # Top Level
 hqlass = hqla.Level("HQLA", None)
 hqlass.child["Level1"] = hqla.Level("Level1", None)
@@ -253,6 +253,11 @@ desc = "Other contractual cash inflows"
 iflow.child["others"] = hqla.Level(desc, None)
 
 print(iflow.value())
+print(iflow.get_array())
+
+# %%
+import pandas as pd
+pdhqla = pd.DataFrame(hqlass.get_array())
 
 
 

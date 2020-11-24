@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="faspy", # Replace with your own username
-    version="0.0.21",
+    version="0.0.58",
     author="ROSLI MOHD SANI",
     author_email="romsey67@gmail.com",
     description="A python package for financial instruments",
@@ -17,6 +17,11 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
+    ],
+    install_requires = ["numba",
+                        "sympy",
+                        "scipy",
+                        "numpy",
     ],
     python_requires='>=3.6',
 )
