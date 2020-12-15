@@ -26,12 +26,13 @@ rate = {"value_date": "2020-10-30", "st_busday": "Modified Following",
                   '6M': 3.65, '12M': 3.75, '1Y': 3.70, '2Y': 3.80, '3Y': 3.90,
                   '5Y': 4.00, '10Y': 4.10, '30Y': 4.25}}
 rates.append(rate)
+print(rates)
 
-dfs = dcurve.discount_factor_gen(rates, return_type="time")
+dfs = dcurve.discount_factor_gen(rate, return_type="times")
 print(dfs)
 
 # %%
 
 flat = dcurve.flat_curve("2020-10-30", "2020-12-30", 5.30, rate_basis="Money Market",
                          day_count="Actual/365", bus_day="No Adjustment",
-                         tenors=None, return_type="time")
+                         tenors=None, return_type="days")

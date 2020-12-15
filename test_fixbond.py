@@ -7,27 +7,28 @@ Created on Mon Nov  2 21:02:58 2020
 """
 
 from faspy.interestrate.fixincome import fixbond_structures, fixbond_value, \
-    date_structures
+    date_structures, fixbond
 import numpy as np
+from numpy import datetime64 as dt64
 from faspy.interestrate import rmp_dates as rd
 # %%
 
 mybond = {}
 mybond['issue_date'] = np.datetime64('2018-10-22')
 mybond['value_date'] = np.datetime64('2021-10-22')
-mybond['maturity'] = np.datetime64('2028-10-22')
+mybond['maturity'] = np.datetime64('2128-10-22')
 mybond['day_count'] = 'Actual/365 Fixed'
 mybond['frequency'] = 'Semi-Annual'
 mybond['business_day'] = 'No Adjustment'
 mybond['date_generation'] = rd.date_gen_method[1]
 mybond['face_value'] = 1000000
-mybond['coupon'] = 10
-mybond['ytm'] = None
+mybond['coupon'] = 10.00
+mybond['ytm'] = 10.00
 mybond['type'] = 'Fixed Rate Bond'
 
 structures = list(fixbond_structures(mybond))
 print("STRUCTURES")
-print("=============")
+print("===========")
 print(structures)
 
 try:
@@ -36,35 +37,23 @@ try:
 except:
     pass
 
-# %%
-print("TESTING fixbond_value")
-print("=======================")
-print(structures[-1]["end_date"])
-structures = fixbond_value(mybond["value_date"], structures, 12,
-              mybond["day_count"], mybond["frequency"])
-print(structures)
-try:
-    import pandas as pd
-    pd_data = pd.DataFrame(structures)
-except:
-    pass
-value = 0
-accrued = 0
-for structure in structures:
-    value += structure["pv"]
-    accrued += structure["accrued"]
-
-print("value: ", value)
-print("accrued: ", accrued)
-
-try:
-    import pandas as pd
-    pd_newdata = pd.DataFrame(structures)
-except:
-    pass
-
 
 # %%
 
-coupon_dates = list(date_structures(mybond))
-print(coupon_dates)
+testdata = {"value_date":dt64("2020-05-01"), "maturity": dt64("2025-10-01"),
+            "day_count": "Actual/Actual", "frequency":"Semi-Annual",
+            "business_day": "No Adjustment",
+            "date_generation": "Backward from maturity date",
+            "face_value": 10000000, "coupon": 2.00, "ytm": 2.00}
+val = fixbond(testdata)
+print(val["risks"])
+
+
+try:
+    pd3 = pd.DataFrame(val["structure"])
+
+except:
+    import pandas as pd
+    pd3 = pd.DataFrame(val["structure"])
+    
+    

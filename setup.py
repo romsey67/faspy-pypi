@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="faspy", # Replace with your own username
-    version="0.0.58",
+    version="0.0.87",
     author="ROSLI MOHD SANI",
     author_email="romsey67@gmail.com",
     description="A python package for financial instruments",

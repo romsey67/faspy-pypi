@@ -34,6 +34,7 @@ end = 0.75
 fwd1 = rcurve.calc_fwd_df(start, end, x_axis, y_axis)
 
 ifunc = rcurve.interpolation(x_axis, y_axis, start, is_function=True)
+print(type(ifunc))
 # use this to calculate a long list of forward discount factor
 fwd2 = rcurve.calc_fwd_df(start, end, ifunc=ifunc)
 
