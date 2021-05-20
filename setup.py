@@ -4,8 +4,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="faspy", # Replace with your own username
-    version="0.0.91",
+    name="faspy2", # Replace with your own username
+    version="0.0.95",
     author="ROSLI MOHD SANI",
     author_email="romsey67@gmail.com",
     description="A python package for financial instruments",

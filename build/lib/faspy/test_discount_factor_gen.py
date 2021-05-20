@@ -6,13 +6,12 @@ Created on Fri Oct 30 13:36:21 2020
 @author: RMS671214
 """
 
-from faspy2.interestrate import discount_curve as dcurve
-import time
+from interestrate import discount_curve as dcurve
 
 # %%
 rates = []
 rate = {"value_date": "2020-10-30", "st_busday": "Modified Following",
-        "st_ratebasis": "Simple", "st_daycount": "Actual/365",
+        "st_ratebasis": "Money Market", "st_daycount": "Actual/365",
         "lt_busday": "No Adjustment", "lt_frequency": "Semi-Annual",
         "lt_daycount": "Actual/Actual",
         "rates": {'O/N': 2.30, '1W': 2.35, '1M': 2.45, '3M': 2.55,
@@ -24,16 +23,13 @@ rate = {"value_date": "2020-10-30", "st_busday": "Modified Following",
         "lt_busday": "No Adjustment", "lt_frequency": "Semi-Annual",
         "lt_daycount": "Actual/Actual",
         "rates": {'O/N': 3.30, '1W': 3.35, '1M': 3.45, '3M': 3.55,
-                  '6M': 3.65, '12M': 3.75, '1Y': 3.70, '2Y': 3.80, '3Y': 3.90,
+                  '6M': None, '12M': 3.75, '1Y': None, '2Y': 3.80, '3Y': 3.90,
                   '5Y': 4.00, '10Y': 4.10, '30Y': 4.25}}
 rates.append(rate)
 print(rates)
-start0 = time.perf_counter()
-dfs = dcurve.discount_factor_gen(rate, return_type="times")
 
-end0 = time.perf_counter()
-print(f"Time required for all process to complete: {end0 - start0:0.8f} seconds")
-#print(dfs)
+dfs = dcurve.discount_factor_gen(rate, return_type="time")
+print(dfs)
 
 # %%
 

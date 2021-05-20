@@ -6,12 +6,12 @@ Created on Mon Nov  2 21:02:58 2020
 @author: RMS671214
 """
 
-from faspy.interestrate.fixincome import floatbond_value, \
+from interestrate.fixincome import floatbond_value, \
     date_structures, floatbond
 import numpy as np
-from faspy.interestrate import rmp_dates as rd
-from faspy.interestrate import discount_curve as dcurve
-from faspy.interestrate import rmp_curves as rcurve
+from interestrate import rmp_dates as rd
+from interestrate import discount_curve as dcurve
+from interestrate import rmp_curves as rcurve
 import pandas as pd
 
 # %%
@@ -26,9 +26,9 @@ mybond['frequency'] = 'Semi-Annual'
 mybond['business_day'] = 'No Adjustment'
 mybond['date_generation'] = rd.date_gen_method[1]
 mybond['face_value'] = 100
-mybond["current_coupon"] = 2.65
-mybond['spread'] = 0.0
-mybond["margin"] = 0.00
+mybond["current_coupon"] = 3.65
+mybond['spread'] = 1.5
+mybond["margin"] = 1
 mybond["fixing_basis"] = "Same Day"
 
 # %%
@@ -47,6 +47,21 @@ dfs = dcurve.discount_factor_gen(rate, return_type="times")
 x_axis = [x["times"] for x in dfs]
 y_axis = [x["df"] for x in dfs]
 df_func = rcurve.interpolation(x_axis, y_axis, float(1/366), is_function=True)
+pd_ori = pd.DataFrame(dfs)
+
+# %%
+# Test Date Structure
+coupon_dates = date_structures(mybond)
+
+# %%
+
+zcurve = rcurve.discount_factor_from_zspread(mybond['value_date'],
+                                             coupon_dates,
+                                             mybond['day_count'],
+                                             mybond['frequency'],
+                                             dfs, mybond['spread'])
+pd_z = pd.DataFrame(zcurve)
+
 
 
 # %%
@@ -54,3 +69,16 @@ fbond = floatbond(mybond, rate)
 pd0 = pd.DataFrame(fbond["structure"])
 risks = fbond["risks"]
 print(fbond["risks"])
+
+#%%
+
+# Using Valuation Curve
+val_curve = dict(rate)
+val_curve["rates"] = rcurve.shift_curve(val_curve["rates"], bp=mybond["spread"])
+fbond2 = floatbond(mybond, rate, val_curve=val_curve)
+risks = fbond2["risks"]
+print(fbond2["risks"])
+
+
+
+

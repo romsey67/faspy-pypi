@@ -7,13 +7,14 @@ Created on Wed Nov  4 07:32:58 2020
 """
 from faspy.interestrate import discount_curve as dcurve
 from numpy import datetime64 as dt64
+import time
 vdate = dt64("2020-10-30", "D")
-
+start0 = time.perf_counter()
 # %%
 # Historical Discount Factors
 rates = []
 rate = {"value_date": "2020-10-30", "st_busday": "Modified Following",
-        "st_ratebasis": "Money Market", "st_daycount": "Actual/365",
+        "st_ratebasis": "Simple", "st_daycount": "Actual/365",
         "lt_busday": "No Adjustment", "lt_frequency": "Semi-Annual",
         "lt_daycount": "Actual/Actual",
         "rates": {'O/N': 2.30, '1W': 2.35, '1M': 2.45, '3M': 2.55,
@@ -22,7 +23,7 @@ rate = {"value_date": "2020-10-30", "st_busday": "Modified Following",
 rates.append(rate)
 
 rate = {"value_date": "2020-10-29", "st_busday": "Modified Following",
-        "st_ratebasis": "Money Market", "st_daycount": "Actual/365",
+        "st_ratebasis": "Simple", "st_daycount": "Actual/365",
         "lt_busday": "No Adjustment", "lt_frequency": "Semi-Annual",
         "lt_daycount": "Actual/Actual",
         "rates": {'O/N': 2.31, '1W': 2.34, '1M': 2.44, '3M': 2.56,
@@ -31,7 +32,7 @@ rate = {"value_date": "2020-10-29", "st_busday": "Modified Following",
 rates.append(rate)
 
 rate = {"value_date": "2020-10-28", "st_busday": "Modified Following",
-        "st_ratebasis": "Money Market", "st_daycount": "Actual/365",
+        "st_ratebasis": "Simple", "st_daycount": "Actual/365",
         "lt_busday": "No Adjustment", "lt_frequency": "Semi-Annual",
         "lt_daycount": "Actual/Actual",
         "rates": {'O/N': 2.40, '1W': 2.44, '1M': 2.54, '3M': 2.66,
@@ -40,7 +41,7 @@ rate = {"value_date": "2020-10-28", "st_busday": "Modified Following",
 rates.append(rate)
 
 rate = {"value_date": "2020-10-27", "st_busday": "Modified Following",
-        "st_ratebasis": "Money Market", "st_daycount": "Actual/365",
+        "st_ratebasis": "Simple", "st_daycount": "Actual/365",
         "lt_busday": "No Adjustment", "lt_frequency": "Semi-Annual",
         "lt_daycount": "Actual/Actual",
         "rates": {'O/N': 2.38, '1W': 2.44, '1M': 2.55, '3M': 2.76,
@@ -49,7 +50,7 @@ rate = {"value_date": "2020-10-27", "st_busday": "Modified Following",
 rates.append(rate)
 
 rate = {"value_date": "2020-10-27", "st_busday": "Modified Following",
-        "st_ratebasis": "Money Market", "st_daycount": "Actual/365",
+        "st_ratebasis": "Simple", "st_daycount": "Actual/365",
         "lt_busday": "No Adjustment", "lt_frequency": "Semi-Annual",
         "lt_daycount": "Actual/Actual",
         "rates": {'O/N': 2.35, '1W': 2.40, '1M': 2.50, '3M': 2.65,
@@ -87,17 +88,17 @@ for df in dfs:
 # 1.Calculate the log normal return
 # 2. Calculate volatility
 # 3. Calculate Correlation
-from faspy.risk import var_utils as vu
+from faspy.risk import var_utils2 as vu2, var_utils as vu
 from numpy import array as arr
 
-returns = vu.returns_from_prices(arr(hdf))
-vols = vu.volatilities(returns)
-corr = vu.correlation(returns)
+returns = vu2.returns_from_prices(arr(hdf))
+vols = vu2.volatilities(returns)
+corr = vu2.correlation(returns)
 # print(returns, vols, corr)
 
 # %%
 # Bond Exposure
-from faspy.interestrate.cashflows import fixbond_structures, fixbond_value
+from faspy.interestrate.fixincome import fixbond_structures, fixbond_value
 import numpy as np
 from faspy.interestrate import rmp_dates as rd
 
@@ -130,11 +131,12 @@ for structure in structures:
     datum = {}
     if structure["end_date"] > vdate:
         datum["times"] = day_cf("Actual/365", vdate, structure["end_date"])
-        datum["df"] = idf(datum["times"]) 
+        datum["df"] = idf(datum["times"])
         datum["pv"] = datum["df"] * structure["cash_flow"]
         cf.append(datum)
 
 # %%
+
 # mapped bond cash flow to var vertices
 vdf = hdf[0]
 mcf = vu.map_cf_to_var_vertices(cf, vdf, var_time, corr, vols)
@@ -142,5 +144,8 @@ confidence = 0.99
 # weigh the asset
 weighted = vu.var_asset_weightbyprice(mcf, confidence, vols)
 # calculate value at risk
-va_risk = vu.value_at_risk(weighted, corr)
 
+print(weighted)
+va_risk = vu.value_at_risk(weighted, corr)
+end0  = time.perf_counter()
+print(f"Time required for all process to complete: {end0 - start0:0.4f} seconds")
